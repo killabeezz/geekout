@@ -1,0 +1,556 @@
+
+
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Google Developers</title>
+    
+      <link rel="stylesheet" type="text/css" href="/_static/54d310abfe/css/screen-docs.css" />
+      <link rel="stylesheet" href="//www.google.com/cse/style/look/default.css" type="text/css" />
+      <link rel="stylesheet" href="//fonts.googleapis.com/css?family=Open+Sans:300,400" type="text/css">
+    
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.6.1/jquery.min.js"></script>
+    <script id="jqueryui" src="//ajax.googleapis.com/ajax/libs/jqueryui/1.8.10/jquery-ui.min.js" defer async></script>
+    <script src="//www.google.com/jsapi?key=AIzaSyCZfHRnq7tigC-COeQRmoa9Cxr0vbrK6xw"></script>
+    <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <script src="/_static/54d310abfe/js/framebox.js"></script>
+  </head>
+  <body class="docs framebox_body">
+    
+    <style>
+      body.docs table, body.docs table td {
+        border:0;
+      }
+      body.docs h2, body.docs h3, body.docs h4, body.docs h5 {
+        margin-bottom:.1em;
+      }
+    </style>
+    <link rel="stylesheet" type="text/css" href="//developers.google.com/_static/css/screen.css"/>
+    <link rel="stylesheet" type="text/css" href="/youtube/css/local_extensions.css"/>
+    <link rel="stylesheet" type="text/css" href="/youtube/css/youtube_css.css"/>
+    <script src="//www.google.com/jsapi"></script>
+    <script type="text/javascript">
+      google.load("swfobject", "2.1");
+    </script type="text/javascript">
+
+    <script src="js/as3_demo_functions.js" type="text/javascript"></script>
+<div id="pagecontent">
+  <!-- embed the player -->
+  <p>This page demonstrates the YouTube Player API's functions. To allow room for critical player functionality, players must be at least 200px by 200px.</p>
+
+  <table style="border:0">
+    <tr>
+      <td style="border:0; width: 640px;">
+        <div id="flashplayer-wrapper" style="display:none">
+          <div id="ytflashplayer">You need Flash player 9+ and JavaScript enabled to view this video.</div>
+        </div>
+        <div id="html5player-wrapper">
+          <div id="myythtml5player"></div>
+        </div>
+        <div id="update-player-button" style="width:640px; margin-top: 8px;"><center><button id="redrawPlayer" type="button" class="button-blue button" style="font-size: 12px;" onclick="redrawPlayer();">Update player with selected options</button></center></div>
+      </td>
+      <!--
+      <td style="border:0; padding-top: 160px">
+        <div style="vertical-align:middle;">
+          <input id="redrawPlayer" type="button" class="player-demo-update-button" onclick="redrawPlayer();" value="Update player with selected options"/>
+        </div>
+      </td>
+      -->
+    </tr>
+  </table>
+
+  <div style="float:left; width: 640px; padding-right:30px;">
+  <span class="player-demo-group">Type:</span>
+  <div class="player-demo-group-options">
+    <label for="playerVersion">Display an</label>
+    <select id="playerVersion" name="playerVersion" onchange="updateContentTypes();">
+      <option value="html5">IFrame</option>
+      <option value="as3">AS3</option>
+      <option value="as2">AS2</option>
+    </select>
+    <select id="playerType" name="playerType">
+      <option value="embedded">embedded player</option>
+      <option value="chromeless">chromeless player</option>
+    </select>
+  </div>
+  <span class="player-demo-group">Content:</span>
+  <div class="player-demo-group-options">
+    <select id="queueingOption" name="queueingOption">
+      <option value="load">Load</option>
+      <option value="cue">Cue</option>
+    </select>
+    <select id="contentType" name="contentType" onchange="updateContentOptions();">
+      <option value="video">a video</option>
+      <option value="videolist">a list of videos</option>
+      <option value="playlist">a playlist</option>
+      <option value="user_uploads">uploaded videos</option>
+      <option value="user_favorites">favorite videos</option>
+      <option value="search">search results</option>
+    </select>
+    <label for="contentType" id="contentTypeLabel">with video ID</label>
+    <input type="text" size="25" id="playerContent" value="M7lc1UVf-VE" />
+    <a class="tooltip" href="#" onclick="return false;"><img src="/youtube/images/icon-help.gif" alt="" /><span class="tooltip-content tooltip-right-align">
+        After entering a video ID or video URL, you can click the
+        <strong>Load video</strong> button to instruct the video player to
+        load the specified video and begin playing it instead of whichever
+        video, if any, is already playing.<br/><br/>
+        If you click the <strong>Cue video</strong> button, the player will
+        load the video but will not begin playing it. To play the video, you
+        will need to click the <strong>Play</strong> link in the player
+        controls section or on the video player itself.<br/><br/>
+        Depending on the button you click and whether you entered a video ID or
+        a YouTube URL, this page will call one of the following API functions:
+        <ul>
+          <li>loadVideoById</li>
+          <li>loadVideoByUrl</li>
+          <li>cueVideoById</li>
+          <li>cueVideoByUrl</li>
+        </ul>
+      </span></a>
+    <br/>
+    <label for="startseconds">Start at:</label>
+    <input type="text" size="1" id="startseconds" value="0" />
+    <label for="startquality">seconds&nbsp;&nbsp;&nbsp;&nbsp;Suggested quality:</label>
+    <select id="startquality" name="startquality">
+      <option value="default">default</option>
+      <option value="highres">highres</option>
+      <option value="hd1080">hd1080</option>
+      <option value="hd720">hd720</option>
+      <option value="large">large</option>
+      <option value="medium">medium</option>
+      <option value="small">small</option>
+    </select>
+  </div>
+  
+  <span class="player-demo-group">Controls:
+    <a class="tooltip" href="#" onclick="return false;"><img src="/youtube/images/icon-help.gif" alt="" /><span class="tooltip-content tooltip-left-align">
+        The controls in this section let you play, pause or stop a video. You
+        can also seek to a specific point in the video by entering a number in
+        the <strong>Seek to</strong> field, which specifies the time offset
+        from the beginning of the video when playback should begin.</span></a>
+  </span>
+  <div class="player-demo-group-options">
+    <strong>Quality:</strong>&nbsp;
+    <label for="newquality">Update playback quality:</label>
+    <select id="newquality" name="newquality" onchange="setQuality(this.value)">
+      <option value="default">default</option>
+      <option value="highres">highres</option>
+      <option value="hd1080">hd1080</option>
+      <option value="hd720">hd720</option>
+      <option value="large">large</option>
+      <option value="medium">medium</option>
+      <option value="small">small</option>
+    </select>
+    <a class="tooltip" href="#" onclick="return false;"><img src="/youtube/images/icon-help.gif" alt="" /><span class="tooltip-content tooltip-right-align">
+        The <strong>Available levels</strong> field in the <strong>Playback
+        statistics</strong> section below lists the available quality levels
+        for this video. You can use this pulldown to call the 
+        <strong>setPlaybackQuality()</strong> function and change the quality
+        of the video that is playing. When you change the quality, the video
+        will pause and then restart from the beginning.<br/><br/>
+        If you select a quality level that is unavailable, YouTube will select
+        the most appropriate quality level available. For example, if you try
+        to set the quality to <strong>small</strong>, but the only levels
+        available are <strong>medium</strong> and <strong>large</strong>,
+        YouTube will set the quality level to <strong>medium</strong>.</span></a>
+    <br/><br/>
+    <strong>Position:</strong>&nbsp;
+    <a href="javascript:void(0);" onclick="play();">Play</a>&nbsp;&nbsp;|&nbsp;&nbsp;<a href="javascript:void(0);" onclick="pause();">Pause</a>&nbsp;&nbsp;|&nbsp;&nbsp;<a href="javascript:void(0);" onclick="stop();">Stop</a> 
+    <span style="padding-left:25px">
+      <label for="seekto">Seek to:</label><input id="seekto" type="text" size="4" /> seconds <input type="submit" value="Go" onclick="seekTo(document.getElementById('seekto').value, true); return false;"/>
+    </span>
+    <br/><br/>
+    <div id="playlist-position-options" style="display:none">
+      <span class="hidden-bold">Position:</span>&nbsp;
+      <a href="javascript:void(0);" onclick="previousVideo();">Previous</a>&nbsp;&nbsp;|&nbsp;&nbsp;<a href="javascript:void(0);" onclick="nextVideo();">Next</a>
+      <span style="padding-left:25px">
+        <label for="seekto">Go to (enter playlist index no.):</label><input id="playVideoAt" type="text" size="4" /> <input type="submit" value="Go" onclick="playVideoAt(document.getElementById('playVideoAt').value, true); return false;"/>
+      </span>
+      <br/><br/>
+      <span class="hidden-bold">Position:</span>&nbsp;
+      Loop videos: <span id="player-loop-status" class="player-option-status">off</span> (<a id="player-loop-link" href="javascript:void(0);" onclick="setLoop();">turn on</a>)<br/><br/>
+      <span class="hidden-bold">Position:</span>&nbsp;
+      Shuffle videos: <a id="player-shuffle-link" href="javascript:void(0);" onclick="setShuffle(true);">shuffle</a>&nbsp;<span id="player-shuffle-text" style="display:none">or</span>&nbsp;<a id="player-unshuffle-link" href="javascript:void(0);" onclick="setShuffle(false);" style="display:none">return to original order</a>
+      <br/><br/>
+    </div>
+    <strong>Volume:</strong>&nbsp;
+    <a href="javascript:void(0);" onclick="mute();">Mute</a>&nbsp;&nbsp;|&nbsp;&nbsp;<a href="javascript:void(0);" onclick="unMute();">Unmute</a>&nbsp;&nbsp;|&nbsp;&nbsp;Set volume: <input id="vol" type="text" size="2" onBlur="setVolume(document.getElementById('vol').value)" /> <span style="color:#555">(0-100)</span> [<span id="volume">--</span>]
+    <a class="tooltip" href="#" onclick="return false;"><img src="/youtube/images/icon-help.gif" alt="" /><span class="tooltip-content tooltip-left-align">
+        The mute/unmute controls are self-explanatory. The <strong>Playback
+        statistics</strong> section should indicate whether the player is
+        muted &ndash; see the <strong>Volume on/off</strong> field.<br><br>
+        You can also adjust the volume of the player by entering a number
+        between 0 and 100 in the <strong>Set volume</strong> field. The
+        volume will change when you tab (or click) out of the field.</span></a>
+    <br/>
+    <span style="color:#fff"><strong>Volume:</strong> Mute&nbsp;&nbsp;|&nbsp;&nbsp;Unmute&nbsp;&nbsp;|&nbsp;&nbsp;</span><span style="color:#555;font-size:83%">(Tab out of the input box to update the volume.)</span>
+    <div id="playbackrate-options">
+      <strong>Playback rate:</strong>&nbsp;
+      <input id="set-playback-rate" type="text" size="2" onBlur="setPlaybackRate(document.getElementById('set-playback-rate').value)" /><br/>
+      <span style="color:#fff"><strong>Playback rate:</strong>&nbsp;<span style="color:#555;font-size:83%">(Tab out of the input box to set the playback rate.)</span>
+    </div>
+  </div>
+
+  <span class="player-demo-group">Size:
+    <a class="tooltip" href="#" onclick="return false;"><img src="/youtube/images/icon-help.gif" alt="" /><span class="tooltip-content tooltip-left-align">
+        This section lets you modify the size of the player, using the
+        <strong>setSize(width, height)</strong> function. Typically, this
+        function would only be useful in an ActionScript application. In a
+        JavaScript application, the resized player will still be inserted in
+        the object that contains the video player, even if that object is
+        smaller or larger than the resized player.<br><br>
+        Note that on this page, the maximum dimensions for the player are 640
+        pixels wide and 360 pixels high &ndash; 640x360 in widescreen (16:9)
+        format or 480x360 in standard (4:3) format.
+      </span></a>
+  </span>
+  <div class="player-demo-group-options">
+    <label for="aspectRatio">Aspect ratio:</label>
+    <select id="aspectRatio" name="aspectRatio" onchange="setPlayerHeight(document.getElementById('aspectRatio').value, document.getElementById('playerWidth').value); return false;">
+      <option value="widescreen">16x9</option>
+      <option value="standard">4x3</option>
+    </select>&nbsp;&nbsp;|&nbsp;&nbsp;
+    <label for="playerWidth">Width:</label>
+    <input id="playerWidth" type="text" size="3" value="640" onkeyup="setPlayerHeight(document.getElementById('aspectRatio').value, document.getElementById('playerWidth').value); return false;"/>&nbsp;&nbsp;|&nbsp;&nbsp;
+    Height: <span id="playerHeight">360</span> 
+    <input type="submit" value="Update player size" onclick="setPlayerSize(document.getElementById('playerWidth').value, document.getElementById('playerHeight').innerHTML); return false;"/>
+  </div>
+
+  <span class="player-demo-group">Statistics:
+    <a class="tooltip" href="#" onclick="return false;"><img src="/youtube/images/icon-help.gif" alt="" /><span class="tooltip-content tooltip-left-align">
+        The information in this section describes the status of the video 
+        player and the video being played (or the last video to play). The
+        following list shows the API function associated with each field
+        in this section:
+        <ul>
+          <li>Duration: getDuration()</li>
+          <li>Current time: getCurrentTime()</li>
+          <li>Player state: getPlayerState()</li>
+          <li>Percentage of video loaded: getVideoLoadedFraction()</li>
+          <li>Start bytes: getVideoStartBytes()</li>
+          <li>Quality level: getPlaybackQuality()</li>
+          <li>Available levels: getAvailableQualityLevels()</li>
+          <li>Volume (on/off): isMuted()</li>
+          <li>Number of videos in playlist: count(getPlaylist())</li>
+          <li>Position of current video: getPlaylistIndex()</li>
+          <li>Videos in playlist: getPlaylist()</li>
+          <li>Bytes loaded: getVideoBytesLoaded() (deprecated)</li>
+          <li>Total bytes: getVideoBytesTotal() (deprecated)</li>
+        </ul>
+      </span></a>
+  </span>
+  <div class="player-demo-group-options" style="padding-top: 4px;">
+    Duration: <span id="videoduration">--:--</span>,
+    Current time: <span id="videotime">--:--</span>,
+    Player state: <span id="playerstate">--</span><br/>
+    <span id="bytesdisplay">
+      Start bytes: <span id="startbytes">--</span>,
+      <div id="percent-video-loaded" style="display: inline">Percentage of video loaded: <span id="percentloaded">--</span></div>
+    </span><br/>
+    <span id="quality">
+      Quality level: <span id="playbackquality">--</span>,
+      Available levels: <span id="availablelevels"> </span>,
+      Volume (on/off): <span id="ismuted"> </span>
+    </span><br/>
+    <span id="playbackrate-statistics">
+      Playback rate: <span id="playbackrate">--</span>,
+      Available rates: <span id="availableplaybackrates"> </span>
+    </span><br/>
+    <span id="bytesdisplay-deprecated">
+      <span style="color:maroon">Deprecated: </span>
+      Bytes loaded: <span id="bytesloaded">--</span>, 
+      Total bytes: <span id="bytestotal">--</span>
+    </span>
+    <div id="playlist-statistics" style="display:none">
+      <br/>Number of videos in playlist: <span id="playlistcount"> </span><br/>
+      Position of current video ('0' = first video): <span id="currentplaylistvideo"> </span><br/>
+      <table style="border:0">
+        <tr>
+          <td style="border:0; padding:0; vertical-align:top">Videos in playlist:</td>
+          <td style="border:0; padding:0;"><span id="playlistvideos"> </span></td>
+        </tr>
+      </table>
+    </div>
+  </div>
+
+  <span class="player-demo-group">History
+    <a class="tooltip" href="#" onclick="return false;"><img src="/youtube/images/icon-help.gif" alt="" /><span class="tooltip-content tooltip-left-align">
+        This page calls the <strong>getVideoUrl()</strong> and 
+        <strong>getEmbedCode()</strong> functions when the player is ready to
+        play a video. These functions are called again if you load or cue a
+        video.<br/><br/>
+        If you call <strong>getVideoUrl()</strong> after a video has played for
+        at least 10 seconds, the URL will include a parameter that specifies the
+        time offset at which the player should begin playing the video.
+      </span></a>
+  </span>
+  <div class="player-demo-group-options" style="padding-top: 4px">
+    <a href="javascript:void(0)" onclick="clearOutput();">(clear)</a><br/>
+  </div>
+  <div style="padding-left:15px">
+    <span class="player-demo-group-subheading">Errors</span>
+    <div id="errorCode" style="padding:0px 0px 0px 15px">None yet.</div><br/>
+    <span class="player-demo-group-subheading">Events and Function Calls</span>
+    <div id="eventhistory" style="padding:0px 0px 0px 15px">None yet.</div>
+  </div><br/>
+
+
+    <span class="player-demo-group">Embed code</span><br/><br/>
+    <div id="embedDisclaimer" class="caution" style="display:none"><strong>Note:</strong> You cannot use an <code>&lt;iframe&gt;</code> or <code>&lt;object&gt;</code> tag to embed a chromeless player. However, you can very closely approximate the behavior of a chromeless player by using a standard IFrame embedded player and setting the <code>controls</code> and <code>showinfo</code> parameter values to <code>0</code>.</div>
+    <section class="kd-tabbed-horz" id="horzTab2">
+      <div class="kd-buttonbar kd-tabbar-horz">
+        <header id="iframe-embed-code-header" class="selected kd-tabbutton" onclick="switchEmbedCode(this);">IFrame embed</header>
+        <header id="object-embed-code-header" class="kd-tabbutton" onclick="switchEmbedCode(this);">Object embed</header>
+      </div>
+      <article id="iframe-embed-code" class="selected" style="display: block;"> </article>
+      <article id="object-embed-code" style="display: none;" class=""> 
+      </article>
+    </section>
+  </div>
+
+  <div style="display: inline">
+  <span class="player-demo-group">Player parameters</span><br/>
+  <div style="padding: 12px 0px 0px 25px; color: #555;">
+    &nbsp;&nbsp;&bull; checked box = parameter value of <code>1</code><br/>
+    &nbsp;&nbsp;&bull; unchecked box = parameter value of <code>0</code><br/>
+    &nbsp;&nbsp;&bull; Supported players are listed for each parameter.<br/><br/>
+  </div>
+    <table id="embedded-player-options" class="noborder noTopMargin" style="display:inline">
+      <tr>
+        <td class="noborder" style="font-weight:bold">Parameter</td>
+        <td class="noborder" style="font-weight:bold">Value</td>
+      </tr>
+      <tr id="autohide-param">
+        <td class="noborder">autohide
+          <a class="tooltip" href="#" onclick="return false;"><img src="/youtube/images/icon-help.gif" alt="" /><span class="tooltip-content tooltip-right-align">
+            <strong>[no value]</strong> (default) &ndash; In the AS3 and
+            AS2 players, which support this parameter, the default behavior
+            is for the player controls (play button, volume control, etc.
+            to fade out while the video progress bar remains visible.
+            In the HTML5 player, which does not support it, the default
+            behavior is for the player controls to and video progress bar
+            to be visible throughout the video.<br/><br/>
+            <strong>1</strong> &ndash; Automatically slide the video
+            progress bar and the player controls out of view a couple
+            of seconds after the video starts playing. They will only
+            reappear if the user moves her mouse over the video player
+            or presses a keyboard key.<br/><br/>
+            <strong>0</strong> (default) &ndash; The video progress bar
+            and player controls will be visible throughout the video.
+            </span></a><br/>
+          <span class="supported-players">(AS3, AS2)</span>
+        </td>
+        <td class="noborder valignMiddle">
+          <select id="embedded-player-autohide" name="autohide">
+            <option value="">[no value]</option>
+            <option value="1">1</option>
+            <option value="0">0</option>
+          </select>
+        </td>
+      </tr>
+      <script type="text/javascript">
+        writePlayerParameterCheckbox('autoplay',
+            '<strong>1</strong> &ndash; Automatically play the initial ' +
+            'video when the player loads.<br/><br/>' +
+            '<strong>0</strong> (default) &ndash; Do not automatically ' +
+            'play initial video when the player loads.', 'AS3, AS2, HTML5', '');
+        writePlayerParameterCheckbox('border',
+            '<strong>1</strong> &ndash; Display a border around the entire ' +
+            'video player. The <strong>color1</strong> and ' +
+            '<strong>color2</strong> parameters set the border\'s ' +
+            'primary and secondary colores, respectively.<br/><br/>' +
+            '<strong>0</strong> (default) &ndash; Do not display a border ' +
+            'around the video player.', 'AS2', '');
+        writePlayerParameterCheckbox('cc_load_policy',
+            '<strong>1</strong> &ndash; Cause closed captions to be shown ' +
+            'by default even if the user has turned captions off. The ' +
+            'default behavior is based on the user\'s preference.',
+            'AS3, AS2', '');
+      </script>
+
+      <tr id="color-param">
+        <td class="noborder">color
+          <a class="tooltip" href="#" onclick="return false;"><img src="/youtube/images/icon-help.gif" alt="" /><span class="tooltip-content tooltip-right-align">
+              This parameter specifies the color that will be used in the
+              player's video progress bar to highlight the amount of the
+              video that the viewer has already seen. The default value
+              is <strong>red</strong>.
+            </span></a><br/>
+          <span class="supported-players">(AS3, AS2)</span>
+        </td>
+        <td class="noborder valignMiddle">
+          <select id="embedded-player-color" name="color">
+            <option value="red">red</option>
+            <option value="white">white</option>
+          </select>
+        </td>
+      </tr>
+
+      <script type="text/javascript">
+        writePlayerParameterTextInput('color1',
+            'The primary border color for video control bar buttons and ' +
+            'for the border on the video player (if such a border displays).',
+            'AS2', 'b1b1b1', '6', 'onkeyUp="updateColor(this);"');
+        writePlayerParameterTextInput('color2',
+            'The background color for the video control bar buttons.',
+            'AS2', 'b1b1b1', '6', 'onkeyUp="updateColor(this);"');
+        writePlayerParameterCheckbox('controls',
+            '<strong>1</strong> &ndash; (default) Display player controls.' +
+            '<br/><br/><strong>0</strong> &ndash; Do not display player ' +
+            'controls in the video player. (The player will appear like a ' +
+            'chromeless player.)', 'AS3, HTML5', 'checked');
+        writePlayerParameterCheckbox('disablekb',
+            '<strong>1</strong> &ndash; Disable player keyboard controls.' +
+            '<br/><br/>' +
+            '<strong>0</strong> (default) &ndash; Enable player keyboard ' +
+            'controls. Keyboard controls are:<br/>' +
+            '<ul>' +
+            '<li>Spacebar: Play/Pause' +
+            '<li>Left arrow: Jump back 10% in current video.' +
+            '<li>Right arrow: Jump ahead 10% in current video.' +
+            '<li>Up arrow: Volume up' +
+            '<li>Down arrow: Volume down' +
+            '</ul>', 'AS3, AS2', '');
+        writePlayerParameterCheckbox('egm',
+            '<strong>1</strong> &ndash; Enable the "Enhanced Genie Menu," ' +
+            'causing the genie menu (if present) to appear when the user ' +
+            'mouses over the video display area rather than only if the ' +
+            'menu button is clicked.<br/><br/> ' +
+            '<strong>0</strong> (default) &ndash; Do not enable this feature.',
+            'AS2', '');
+        writePlayerParameterCheckbox('enablejsapi',
+            '<strong>1</strong> &ndash; Enable the JavaScript API. A link ' +
+            'to the documentation for the JavaScript API appears in the ' +
+            'menu on the left side of the page.<br/><br/> ' +
+            '<strong>0</strong> (default) &ndash; Do not enable the ' +
+            'JavaScript API.', 'AS3, AS2, HTML5', '');
+        writePlayerParameterTextInput('end',
+            'The time offset at which the video should stop playing. The ' +
+            'value is a positive integer that specifies the number of ' +
+            'seconds into the video that the player stop playback.',
+            'AS3', '', '4', '');
+        writePlayerParameterCheckbox('fs',
+            '<strong>1</strong> (default) &ndash; Enable the fullscreen ' +
+            'button.<br/><br/> ' +
+            '<strong>0</strong> &ndash; Disable the fullscreen button.',
+            'AS3, AS2', '');
+        writePlayerParameterCheckbox('hd',
+            '<strong>1</strong> (default) &ndash; Enable the HD playback ' +
+            'button. This button only has an effect if an HD version of ' +
+            'the video is available.<br/><br/><strong>0</strong> &ndash; ' +
+            'Do not enable the HD playback button.', 'AS2', '');
+      </script>
+
+      <tr id="iv_load_policy-param">
+        <td class="noborder">iv_load_policy
+          <a class="tooltip" href="#" onclick="return false;"><img src="/youtube/images/icon-help.gif" alt="" /><span class="tooltip-content tooltip-right-align">
+              <strong>1</strong> (default) &ndash; Show video annotations.
+              <strong>3</strong> &ndash; Do not show video annotations.
+            </span></a><br/>
+          <span class="supported-players">(AS3, AS2)</span>
+        </td>
+        <td class="noborder valignMiddle">
+          <select id="embedded-player-iv_load_policy" name="iv_load_policy">
+            <option value="1">1</option>
+            <option value="3">3</option>
+          </select>
+        </td>
+      </tr>
+
+      <script type="text/javascript">
+        writePlayerParameterCheckbox('loop',
+            '<strong>1</strong> &ndash; If the player is loading a single ' +
+            'video, play the video again and again. If the player is ' +
+            'loading a playlist, play the entire playlist and then start ' +
+            'again at the first video.<br/><br/> ' +
+            '<strong>0</strong> (default) &ndash; Do not continuously play ' +
+            'video or entire playlist.', 'AS3, HTML5', '');
+        writePlayerParameterCheckbox('modestbranding',
+            'This parameter lets you use a YouTube player that does not show ' +
+            'a YouTube logo. Set the parameter value to <strong>1</strong> ' +
+            'to prevent the YouTube logo from displaying in the control ' +
+            'bar. Note that a small YouTube text label will still display ' +
+            'in the upper-right corner of a paused video when the user\'s ' +
+            'mouse pointer hovers over the player.', 'AS3, HTML5', '', '');
+        writePlayerParameterTextInput('playerapiid',
+            'An alphanumeric string used in conjunction with the ' +
+            'JavaScript API.', 'AS3, AS2', '', '8', '');
+        writePlayerParameterTextInput('playlist',
+            'A comma-separated list of video IDs that will play in ' +
+            'succession.', 'AS3, HTML5', '', '8', '');
+        writePlayerParameterCheckbox('rel',
+            '<strong>1</strong> (default) &ndash; Load related ' +
+            'videos once playback of initial video starts and display ' +
+            'in "genie menu" when menu button is pressed.<br/><br/> ' +
+            '<strong>0</strong> &ndash; Do not load related videos. ' +
+            'Also, disable the player search functionality, regardless ' +
+            'of the showsearch parameter value.', 'AS3, AS2, HTML5',
+            'checked', '');
+        writePlayerParameterCheckbox('showinfo',
+            '<strong>1</strong> (default) &ndash; Display information like ' +
+            'the video title and rating before the video starts playing. ' +
+            '<br/><br/><strong>0</strong> &ndash; Do not display this ' +
+            'information.', 'AS3, AS2, HTML5', 'checked', '');
+        writePlayerParameterCheckbox('showsearch',
+            '<strong>1</strong> (default) &ndash; Show a search box when the ' +
+            'video is minimized. (A search box will not display if the ' +
+            '<strong>rel</strong> parameter value is <strong>0</strong>.' +
+            '<br/><br/><strong>0</strong> &ndash; Do not show the search box.',
+            'AS2', 'checked', '');
+        writePlayerParameterTextInput('start',
+            'The time offset at which the video should begin playing. The ' +
+            'value is a positive integer that specifies the number of ' +
+            'seconds into the video that the player should begin. The ' +
+            'player will look for the closest keyframe at or before the ' +
+            'time that you specify.', 'AS3, AS2, HTML5', '', '4', '');
+      </script>
+      <tr id="theme-param">
+        <td class="noborder">theme
+          <a class="tooltip" href="#" onclick="return false;"><img src="/youtube/images/icon-help.gif" alt="" /><span class="tooltip-content tooltip-right-align">
+              This parameter indicates whether the embedded player will
+              display player controls (like a 'play' button or volume
+              control) within a dark or light control bar. The default
+              theme is <strong>dark</strong>
+            </span></a><br/>
+          <span class="supported-players">(AS3, AS2, HTML5)</span>
+        </td>
+        <td class="noborder valignMiddle">
+          <select id="embedded-player-theme" name="theme">
+            <option value="dark">dark</option>
+            <option value="light">light</option>
+          </select>
+        </td>
+      </tr>
+    </table>
+  </div>
+  <script type="text/javascript">
+    // <![CDATA[
+    var baseUrl = 'https://www.youtube.com/';
+    var swfUrl = 'https://www.youtube.com/v/M7lc1UVf-VE?version=3&enablejsapi=1&playerapiid=ytplayer';
+
+    // allowScriptAccess must be set to allow the Javascript from one 
+    // domain to access the swf on the youtube domain
+    var params = { allowScriptAccess: "always", bgcolor: "#cccccc" };
+
+    // This sets the ID of the DOM object or embed tag to 'myytflashplayer'.
+    // You can use this ID to access the swf and call the player's API
+    var atts = { id: "myytflashplayer" };
+    var flashvars = {};
+    swfobject.embedSWF(swfUrl, "ytflashplayer", "640", "360", "9", null, 
+        flashvars, params, atts);
+    //]]>
+  </script>
+  <script type="text/javascript">
+    updateContentTypes();
+  </script>
+  <script src="https://www.youtube.com/player_api" type="text/javascript"></script>
+
+    <script>
+      
+      devsite.github.Link.convertAnchors();
+      
+    </script>
+  </body>
+</html>
