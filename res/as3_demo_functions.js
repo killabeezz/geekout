@@ -21,7 +21,7 @@ var contentTypeLabel = {
   'search': 'for the query'
 };
 var contentType = 'video'
-var playerContent = 'M7lc1UVf-VE';
+var playerContent = 'yf9gulYfUh4';
 var html5PlayerTypes = ['embedded:embedded player'];
 var player;
 var flashPlayer;
