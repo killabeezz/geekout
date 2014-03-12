@@ -300,7 +300,7 @@ function getEmbeddedPlayerOptions() {
  */
 function setVideoId() {
   if (contentType == 'video' || playerVersion == 'as2') {
-    vid = (playerContent == '') ? 'M7lc1UVf-VE' : playerContent;
+    vid = (playerContent == '') ? 'yf9gulYfUh4' : playerContent;
   } else if (contentType == 'videolist') {
     var videoListArray = playerContent.split(',');
     vid = videoListArray[0];
@@ -599,7 +599,7 @@ function onYouTubeHTML5PlayerReady(event) {
 }
 
 function onYouTubePlayerAPIReady() {
-  createYTPlayer('myythtml5player', '360', '640', 'M7lc1UVf-VE', {});
+  createYTPlayer('myythtml5player', '360', '640', 'yf9gulYfUh4', {});
 }
 
 /**
